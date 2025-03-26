@@ -188,7 +188,7 @@ export default function AttemptQuiz() {
           <div className="mb-6">
             <p className="text-lg mb-4">{currentQuestion.text}</p>
             <RadioGroup
-              value={currentQuestion ? (userAnswers[currentQuestion.id] || "") : ""}
+              value={currentQuestion ? (userAnswers[currentQuestion.id] ?? "") : ""}
               onValueChange={handleAnswerSelect}
               className="space-y-3"
             >
