@@ -1,7 +1,9 @@
 import { postRouter } from "@/server/api/routers/post";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import {classRouter} from "@/server/api/routers/class"
-
+import {quizRouter} from "@/server/api/routers/quiz"
+import { questionRouter } from "./routers/question";
+import { attemptRouter } from "./routers/attempt";
 /**
  * This is the primary router for your server.
  *
@@ -10,6 +12,9 @@ import {classRouter} from "@/server/api/routers/class"
 export const appRouter = createTRPCRouter({
   post: postRouter,
   class: classRouter,
+  quiz: quizRouter,
+  question: questionRouter,
+  attempt: attemptRouter
 });
 
 // export type definition of API
