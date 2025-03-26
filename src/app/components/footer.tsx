@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { Brain } from "lucide-react"
 
 export default function Footer() {
@@ -21,7 +21,7 @@ export default function Footer() {
                   <Brain className="w-4 h-4 text-white" />
                 </div>
               </div>
-              <span className="font-bold text-xl">QuizGenius</span>
+              <span className="font-bold text-xl">Qizmo</span>
             </motion.div>
             <motion.p
               className="text-purple-200 mb-4 max-w-md"
@@ -29,7 +29,7 @@ export default function Footer() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              QuizGenius is the ultimate platform for creating, sharing, and mastering knowledge through interactive MCQ
+              Qizmo is the ultimate platform for creating, sharing, and mastering knowledge through interactive MCQ
               quizzes.
             </motion.p>
             <motion.div
@@ -85,14 +85,14 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-purple-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-purple-200 text-sm">&copy; {new Date().getFullYear()} QuizGenius. All rights reserved.</p>
+          <p className="text-purple-200 text-sm">&copy; {new Date().getFullYear()} Qizmo. All rights reserved.</p>
           <div className="flex items-center mt-4 md:mt-0">
             <div className="bg-white rounded-full p-1 mr-2">
               <div className="bg-purple-600 rounded-full w-6 h-6 flex items-center justify-center">
                 <Brain className="w-4 h-4 text-white" />
               </div>
             </div>
-            <span className="font-bold">QuizGenius</span>
+            <span className="font-bold">Qizmo</span>
           </div>
         </div>
       </div>

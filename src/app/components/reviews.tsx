@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView } from "motion/react"
 import { ChevronLeft, ChevronRight, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,7 @@ const reviews = [
     name: "Sarah Johnson",
     role: "High School Teacher",
     content:
-      "QuizGenius has transformed how I assess my students. The AI-generated questions save me hours of preparation time, and my students love the interactive format!",
+      "Qizmo has transformed how I assess my students. The AI-generated questions save me hours of preparation time, and my students love the interactive format!",
     rating: 5,
     image: "/placeholder.svg?height=80&width=80",
   },
@@ -21,7 +21,7 @@ const reviews = [
     name: "Michael Chen",
     role: "University Student",
     content:
-      "I use QuizGenius to prepare for exams, and it's been a game-changer. The analytics help me identify weak areas, and the gamification keeps me motivated.",
+      "I use Qizmo to prepare for exams, and it's been a game-changer. The analytics help me identify weak areas, and the gamification keeps me motivated.",
     rating: 5,
     image: "/placeholder.svg?height=80&width=80",
   },
@@ -29,7 +29,7 @@ const reviews = [
     name: "Dr. Emily Rodriguez",
     role: "Medical Educator",
     content:
-      "As a medical educator, I need reliable and accurate assessment tools. QuizGenius delivers with its customizable templates and collaborative features.",
+      "As a medical educator, I need reliable and accurate assessment tools. Qizmo delivers with its customizable templates and collaborative features.",
     rating: 4,
     image: "/placeholder.svg?height=80&width=80",
   },
@@ -37,7 +37,7 @@ const reviews = [
     name: "David Wilson",
     role: "Corporate Trainer",
     content:
-      "We've implemented QuizGenius across our training programs, and the results have been outstanding. Engagement is up, and knowledge retention has improved significantly.",
+      "We've implemented Qizmo across our training programs, and the results have been outstanding. Engagement is up, and knowledge retention has improved significantly.",
     rating: 5,
     image: "/placeholder.svg?height=80&width=80",
   },
@@ -68,7 +68,7 @@ export default function Reviews() {
         >
           <h2 className="text-3xl md:text-4xl font-bold text-purple-800 mb-4">What Our Users Say</h2>
           <p className="text-purple-600 max-w-2xl mx-auto">
-            Discover how QuizGenius has helped educators, students, and professionals enhance their learning experience.
+            Discover how Qizmo has helped educators, students, and professionals enhance their learning experience.
           </p>
         </motion.div>
 
@@ -160,7 +160,7 @@ export default function Reviews() {
                   </label>
                   <Textarea
                     id="review"
-                    placeholder="Share your experience with QuizGenius..."
+                    placeholder="Share your experience with Qizmo..."
                     rows={4}
                     className="border-purple-200 focus:border-purple-500"
                   />

@@ -1,14 +1,14 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView } from "motion/react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const faqs = [
   {
-    question: "Is QuizGenius free to use?",
+    question: "Is Qizmo free to use?",
     answer:
-      "Yes, QuizGenius offers a free tier with basic features. We also offer premium plans with advanced features for educators and organizations.",
+      "Yes, Qizmo offers a free tier with basic features. We also offer premium plans with advanced features for educators and organizations.",
   },
   {
     question: "Can I create my own custom quizzes?",
@@ -28,7 +28,7 @@ const faqs = [
   {
     question: "Is there a mobile app available?",
     answer:
-      "Yes, QuizGenius is available as a web application and native mobile apps for iOS and Android devices, allowing you to create and take quizzes on the go.",
+      "NO, Qizmp is not available as a web application and native mobile apps. You can access Qizmo on any device with a modern web browser.",
   },
 ]
 

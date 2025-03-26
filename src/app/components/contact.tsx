@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -20,7 +20,7 @@ export default function Contact() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Get in Touch</h2>
-          <p className="text-purple-900 max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you!</p>
+          <p className="text-purple-900 max-w-2xl mx-auto">{"Have questions or feedback? We'd love to hear from you!"}</p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
@@ -80,14 +80,14 @@ export default function Contact() {
           >
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-8 mb-6">
               <h4 className="text-xl font-bold text-white mb-4">Our Office</h4>
-              <p className="text-purple-900 mb-2">123 Quiz Avenue</p>
+              <p className="text-purple-900 mb-2">123 Qizmo Avenue</p>
               <p className="text-purple-900 mb-2">Knowledge City, QZ 12345</p>
               <p className="text-purple-900">United States</p>
             </div>
 
             <div className="bg-white/20 backdrop-blur-sm rounded-xl p-8">
               <h4 className="text-xl font-bold text-white mb-4">Contact Information</h4>
-              <p className="text-purple-900 mb-2">Email: hello@quizgenius.com</p>
+              <p className="text-purple-900 mb-2">Email: hello@qizmo.com</p>
               <p className="text-purple-900 mb-2">Phone: +1 (555) 123-4567</p>
               <p className="text-purple-900">Support Hours: 24/7</p>
             </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView } from "motion/react"
 import { Brain, Zap, Trophy, CheckCircle } from "lucide-react"
 import { FeatureCard } from "./ui/feature-card"
 
@@ -18,8 +18,8 @@ const features = [
   },
   {
     icon: <Trophy className="w-10 h-10 text-purple-600" />,
-    title: "Gamified Learning Experience",
-    description: "Earn points, badges, and compete on leaderboards to stay motivated.",
+    title: "Smart AI Adaptive Experience  ",
+    description: "Smart AI enhances your experience by tailoring questions to your performance.",
   },
   {
     icon: <CheckCircle className="w-10 h-10 text-purple-600" />,
@@ -28,8 +28,8 @@ const features = [
   },
   {
     icon: <CheckCircle className="w-10 h-10 text-purple-600" />,
-    title: "Collaborative Quiz Creation",
-    description: "Work together with team members to create comprehensive quiz sets.",
+    title: "Session Tracking",
+    description: "Automatically track your session and trigger auto-submission upon failure.",
   },
   {
     icon: <CheckCircle className="w-10 h-10 text-purple-600" />,

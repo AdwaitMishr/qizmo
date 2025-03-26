@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { CheckCircle, Brain, Zap, Trophy, Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -48,7 +48,7 @@ export default function MCQQuizLanding() {
                 <Brain className="w-4 h-4 text-purple-600" />
               </div>
             </div>
-            <span className={`font-bold text-xl ${scrolled ? "text-purple-700" : "text-white"}`}>QuizGenius</span>
+            <span className={`font-bold text-xl ${scrolled ? "text-purple-700" : "text-white"}`}>Qizmo</span>
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
@@ -384,7 +384,7 @@ export default function MCQQuizLanding() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Get in Touch</h2>
-            <p className="text-purple-900 max-w-2xl mx-auto">Have questions or feedback? We'd love to hear from you!</p>
+            <p className="text-purple-900 max-w-2xl mx-auto">Have questions or feedback? We would love to hear from you!</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">

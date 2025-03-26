@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { Zap, CheckCircle } from "lucide-react"
 import { GlowingStars } from "./ui/glowing-stars"
