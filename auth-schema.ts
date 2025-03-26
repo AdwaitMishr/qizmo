@@ -1,37 +1,7 @@
-import { sql } from "drizzle-orm";
-import { 
-  index, 
-  pgTableCreator, 
-  text, 
-  timestamp, 
-  boolean, 
-  jsonb 
-} from "drizzle-orm/pg-core";
-
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
-export const createTable = pgTableCreator((name) => `${name}`);
-
-export const posts = createTable(
-  "post",
-  (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
-  }),
-  (t) => [index("name_idx").on(t.name)],
-);
-
-// Add authentication-related tables
-export const user = createTable("user", {
+import { pgTable, text, integer, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import { relations } from 'drizzle-orm';
+// Remove the references to each other in the initial definition
+export const user = pgTable("user", {
     id: text("id").primaryKey(),
     name: text('name').notNull(),
     email: text('email').notNull().unique(),
@@ -39,14 +9,42 @@ export const user = createTable("user", {
     image: text('image'),
     createdAt: timestamp('created_at').notNull(),
     updatedAt: timestamp('updated_at').notNull(),
-    isTeacher: boolean('is_teacher').default(false),
+    // New attributes
     attendedTests: jsonb('attended_tests'),
+    isTeacher: boolean('is_teacher').default(false),
     teacherId: text('teacher_id')
 });
 
+export const teacher = pgTable("teacher", {
+    id: text("id").primaryKey(),
+    userId: text('user_id').notNull(),
+    department: text('department'),
+    specialization: text('specialization'),
+    createdClasses: jsonb('created_classes'),
+    createdQuizzes: jsonb('created_quizzes'),
+    quizzesConducted: jsonb('quizzes_conducted'),
+    assignedCourses: jsonb('assigned_courses'),
+    bio: text('bio'),
+    createdAt: timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull()
+});
 
+// After initial definitions, add foreign key constraints
+export const userRelations = relations(user, ({ one }) => ({
+    teacher: one(teacher, {
+        fields: [user.teacherId],
+        references: [teacher.id]
+    })
+}));
 
-export const session = createTable("session", {
+export const teacherRelations = relations(teacher, ({ one }) => ({
+    user: one(user, {
+        fields: [teacher.userId],
+        references: [user.id]
+    })
+}));
+
+export const session = pgTable("session", {
     id: text("id").primaryKey(),
     expiresAt: timestamp('expires_at').notNull(),
     token: text('token').notNull().unique(),
@@ -57,7 +55,7 @@ export const session = createTable("session", {
     userId: text('user_id').notNull()
 });
 
-export const account = createTable("account", {
+export const account = pgTable("account", {
     id: text("id").primaryKey(),
     accountId: text('account_id').notNull(),
     providerId: text('provider_id').notNull(),
@@ -73,7 +71,7 @@ export const account = createTable("account", {
     updatedAt: timestamp('updated_at').notNull()
 });
 
-export const verification = createTable("verification", {
+export const verification = pgTable("verification", {
     id: text("id").primaryKey(),
     identifier: text('identifier').notNull(),
     value: text('value').notNull(),
