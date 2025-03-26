@@ -1,29 +1,118 @@
-# Create T3 App
+# 📝 Qizmo - Automated MCQ-Based Exam System
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+[![GitHub last commit](https://img.shields.io/github/last-commit/aryansharma2k4/dev-stage)](https://img.shields.io/github/last-commit/aryansharma2k4/dev-stage)
+[![GitHub issues](https://img.shields.io/github/issues-raw/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-raw/aryansharma2k4/dev-stage)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-pr/aryansharma2k4/dev-stage)
+[![GitHub license](https://img.shields.io/github/license/aryansharma2k4/dev-stage)](https://img.shields.io/github/license/aryansharma2k4/dev-stage)
 
-## What's next? How do I make an app with this?
+Qizmo is a secure, scalable, and automated platform designed for MCQ-based online assessments. It empowers universities and institutions to conduct seamless, cheat-resistant exams with real-time monitoring, automated grading, and detailed performance analytics.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 🚀 Features
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+### 🔐 User Authentication & Role-Based Access
+- **Admins**: Manage the platform, monitor exams, and analyze performance metrics
+- **Faculty**: 
+  - Create and manage exams
+  - Add questions to the question bank
+  - Set time limits and randomize question order
+- **Students**:
+  - Take exams with a streamlined and user-friendly interface
+  - View results instantly after submission
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+### 🛠️ MCQ Exam Creation & Management
+- **Exam Builder**: Select questions from a pool or add new ones
+- **Randomization**: Unique question order for each student to prevent cheating
+- **Time Management**:
+  - Custom time limits
+  - Auto-submission when timer expires
 
-## Learn More
+### ⚙️ Automated Grading & Result Generation
+- Instant response evaluation
+- Immediate score display
+- Detailed result reports for faculty and students
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### 📊 Real-Time Exam Monitoring
+- Session tracking
+- Prevent multiple logins
+- Real-time progress tracking
+- Prevent exam reattempts
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## 💻 Tech Stack
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### Frontend
+- Next.js
+- Tailwind CSS
+- TanStack Query
+- tRPC
 
-## How do I deploy this?
+### Backend
+- tRPC
+- PostgreSQL
+- Prisma ORM
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### Security
+- JWT Authentication
+- Session Management
+- Rate Limiting & IP Logging
+
+## 🚦 Quick Start
+
+### Prerequisites
+- Node.js
+- PostgreSQL
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/aryansharma2k4/qizmo.git
+cd qizmo
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Configure environment variables
+Create a `.env` file with:
+```ini
+DATABASE_URL=postgres://user:password@localhost:5432/qizmo
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+BETTER_AUTH_SECRET=your_secret_key
+```
+
+4. Run the application
+```bash
+npm run dev
+```
+
+5. Open `http://localhost:3000`
+
+## 🛠️ User Roles
+
+### Admin
+- Create and manage user accounts
+- Monitor exams in real-time
+- View performance analytics
+
+### Faculty
+- Create and manage question pools
+- Build and schedule exams
+- Review student scores
+
+### Students
+- Take secure exams
+- View immediate results
+- Access exam history and performance analytics
+
+## 💡 Contributing
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a new branch
+3. Submit a pull request
+
+
+## 🤝 Support
+For support, please open an issue in the GitHub repository.
