@@ -121,6 +121,7 @@ export const quizzes = createTable("quizzes", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
     () => new Date()
   ),
+  durationMinutes: integer("duration_minutes"), //not pushed yet
 });
 
 export const quizClasses = createTable(
