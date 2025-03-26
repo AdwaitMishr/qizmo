@@ -9,6 +9,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { getSession } from "@/lib/auth";
 
 import { db } from "@/server/db";
 
@@ -104,3 +105,47 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+export const studentProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(async ({ ctx, next }) => {
+    const session = await getSession();
+    if (!session?.user?.id) {
+      throw new Error("Not authenticated");
+    }
+
+    // Ensure the user is not a teacher
+    if (session.user.isTeacher) {
+      throw new Error("Access denied. Students only.");
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        session,
+        userId: session.user.id,
+      },
+    });
+  });
+
+export const teacherProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(async ({ ctx, next }) => {
+    const session = await getSession();
+    if (!session?.user?.id) {
+      throw new Error("Not authenticated");
+    }
+
+    // Ensure the user is a teacher
+    if (!session.user.isTeacher) {
+      throw new Error("Access denied. Teachers only.");
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        session,
+        userId: session.user.id,
+      },
+    });
+  });
