@@ -24,6 +24,9 @@
   "dependencies": {
     "@better-auth/cli": "^1.2.4",
     "@daveyplate/better-auth-ui": "^1.2.42",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-hover-card": "^1.1.6",
+    "@radix-ui/react-slot": "^1.1.2",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-query": "^5.69.0",
     "@trpc/client": "^11.0.0",
@@ -35,6 +38,7 @@
     "drizzle-orm": "^0.41.0",
     "husky": "^9.1.7",
     "lucide-react": "^0.484.0",
+    "motion": "^12.6.2",
     "next": "^15.2.3",
     "postgres": "^3.4.4",
     "react": "^19.0.0",
