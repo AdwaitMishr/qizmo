@@ -6,11 +6,13 @@ import { motion, AnimatePresence } from "motion/react"
 import { Brain, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useScroll } from "@/components/scroll-provider"
+import { useSession } from "@/lib/auth-client"
 
 export default function Header() {
   const { scrolled } = useScroll()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -59,23 +61,23 @@ export default function Header() {
             transition={{ duration: 0.3, delay: 0.5 }}
             className="flex items-center space-x-3"
           >
-            <Button
+            <Link href="/signIn"><Button
               variant={scrolled ? "outline" : "secondary"}
-              className={`rounded-full transition-all duration-300 ${
+              className={`rounded-full cursor-pointer transition-all duration-300 ${
                 scrolled ? "hover:bg-purple-100" : "bg-white/20 text-white hover:bg-white/30"
               }`}
             >
               Login
-            </Button>
-            <Button
-              className={`rounded-full transition-all duration-300 ${
+            </Button></Link>
+            <Link href="/signUp"><Button
+              className={`rounded-full cursor-pointer transition-all duration-300 ${
                 scrolled
                   ? "bg-purple-600 hover:bg-purple-700 text-white"
                   : "bg-white text-purple-700 hover:bg-purple-50"
               }`}
             >
               Sign Up
-            </Button>
+            </Button></Link>
           </motion.div>
         </div>
 
@@ -112,7 +114,7 @@ export default function Header() {
                 <Button variant="outline" className="w-full">
                   Login
                 </Button>
-                <Button className="w-full">Sign Up</Button>
+                <Link href="/signUp"><Button className=" cursor-pointer w-full">Sign Up</Button></Link>
               </div>
             </nav>
           </motion.div>
