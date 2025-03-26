@@ -58,7 +58,7 @@ Qizmo is a secure, scalable, and automated platform designed for MCQ-based onlin
 ## 🚦 Quick Start
 
 ### Prerequisites
-- Node.js
+- Node.jsx
 - PostgreSQL
 
 ### Installation
