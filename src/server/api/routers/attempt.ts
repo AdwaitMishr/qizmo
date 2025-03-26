@@ -75,36 +75,36 @@ export const attemptRouter = createTRPCRouter({
       return { attemptId, questionId };
     }),
 
-  finishAttempt: studentProcedure
-    .input(z.object({ attemptId: z.number() }))
-    .mutation(async ({ input, ctx }) => {
-      const { attemptId } = input;
-      const studentId = ctx.session.user.id;
+//   finishAttempt: studentProcedure
+//     .input(z.object({ attemptId: z.number() }))
+//     .mutation(async ({ input, ctx }) => {
+//       const { attemptId } = input;
+//       const studentId = ctx.session.user.id;
 
-      const attempt = await db
-        .select()
-        .from(quizAttempts)
-        .where(and(eq(quizAttempts.id, attemptId), eq(quizAttempts.studentId, studentId)))
-        .limit(1);
-      if (!attempt[0] || attempt[0].status !== "in_progress") {
-        throw new Error("Invalid or already completed attempt");
-      }
+//       const attempt = await db
+//         .select()
+//         .from(quizAttempts)
+//         .where(and(eq(quizAttempts.id, attemptId), eq(quizAttempts.studentId, studentId)))
+//         .limit(1);
+//       if (!attempt[0] || attempt[0].status !== "in_progress") {
+//         throw new Error("Invalid or already completed attempt");
+//       }
 
-      // Calculate score (simplified example)
-      const responsesData = await db
-        .select()
-        .from(responses)
-        .where(eq(responses.attemptId, attemptId));
-      let score = 0;
-      // Add scoring logic here based on correct answers
+//       // Calculate score (simplified example)
+//       const responsesData = await db
+//         .select()
+//         .from(responses)
+//         .where(eq(responses.attemptId, attemptId));
+//       let score = 0;
+//       // Add scoring logic here based on correct answers
 
-      await db
-        .update(quizAttempts)
-        .set({ status: "completed", score, endTime: new Date() })
-        .where(eq(quizAttempts.id, attemptId));
+//       await db
+//         .update(quizAttempts)
+//         .set({ status: "completed", score, endTime: new Date() })
+//         .where(eq(quizAttempts.id, attemptId));
 
-      return { attemptId, score };
-    }),
+//       return { attemptId, score };
+//     }),
 
   getAttemptHistory: studentProcedure.query(async ({ ctx }) => {
     const studentId = ctx.session.user.id;
