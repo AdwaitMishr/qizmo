@@ -4,7 +4,6 @@
 
 [![Watch the video](https://img.youtube.com/vi/GJ6dOxLFbLU/0.jpg)](https://www.youtube.com/watch?v=GJ6dOxLFbLU)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/GJ6dOxLFbLU" frameborder="0" allowfullscreen></iframe>
 
 [YouTube Video Link](https://www.youtube.com/watch?v=GJ6dOxLFbLU)
 
