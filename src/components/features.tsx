@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "motion/react"
+import { motion, useInView } from "framer-motion"
 import { Brain, Zap, Trophy, CheckCircle } from "lucide-react"
 import { FeatureCard } from "@/components/ui/feature-card"
 
