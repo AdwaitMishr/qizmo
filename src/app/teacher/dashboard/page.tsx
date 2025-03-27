@@ -395,7 +395,7 @@ const TeacherDashboard = () => {
                   />
                 </div>
                 <div className="mt-4 flex justify-between">
-                  <Link href={`/quiz/${quiz.id}`}>
+                  <Link href={`/teacher/viewresults/${quiz.id}`}>
                     <Button variant="outline" size="sm">
                       View Results
                     </Button>
