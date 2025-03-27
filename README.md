@@ -116,3 +116,11 @@ Contributions are welcome! Please follow these steps:
 
 ## 🤝 Support
 For support, please open an issue in the GitHub repository.
+
+## Project Demonstration
+Check out the youtube link for qizmo project demonstration
+https://youtu.be/GJ6dOxLFbLU
+
+## Project PPT
+Check the project ppt presentation using this link
+https://docs.google.com/presentation/d/18W8LI8d3GVNVCtGWVhl_BxwXANl5HMZD/edit?usp=sharing&ouid=105350664705081969611&rtpof=true&sd=true
