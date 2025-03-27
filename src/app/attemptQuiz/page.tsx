@@ -152,7 +152,7 @@ export default function AttemptQuiz() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div className="flex items-center">
           <Clock className="mr-2 h-5 w-5 text-primary" />
-          <span className={`text-xl font-bold ${timeLeft < 300 ? "text-red-500" : ""}`}>{formatTime(timeLeft)}</span>
+          <span className={`text-xl font-bold ${timeLeft < 300 ? "text-destructive" : ""}`}>{formatTime(timeLeft)}</span>
         </div>
 
         <div className="flex flex-col sm:items-end">
