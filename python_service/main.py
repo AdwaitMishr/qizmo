@@ -111,7 +111,7 @@ async def get_next_questions(data: NextQuestionsInput, db=Depends(get_db)):
 
         current_score = await calculate_current_score(data.responses, db)
         next_difficulty = determine_next_set_difficulty(current_score, data.current_difficulty)
-        selected_questions = sample_questions(current_score, next_difficulty, data.max_questions)
+        selected_questions = sample_questions(current_score, data.current_difficulty, data.max_questions)
 
         if not selected_questions:
             raise HTTPException(status_code=500, detail="No available questions in any difficulty tier.")

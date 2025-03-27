@@ -1,119 +1,151 @@
 import { z } from "zod";
-import { createTRPCRouter, studentProcedure, teacherProcedure } from "@/server/api/trpc";
-import { classes, classStudents, quizzes, quizClasses } from "@/server/db/schema";
+import { createTRPCRouter, publicProcedure, teacherProcedure } from "@/server/api/trpc";
+import { quizzes, quizAttempts, user } from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/server/db";
+import { nanoid } from "nanoid"; // For generating unique codes
 
+// Question schema for validation
+const questionSchema = z.object({
+  text: z.string().min(1),
+  optionA: z.string().min(1),
+  optionB: z.string().min(1),
+  optionC: z.string().min(1),
+  optionD: z.string().min(1),
+  correctOption: z.enum(["a", "b", "c", "d"]),
+  points: z.number().int().positive().default(1),
+});
+
+// Response schema for validation
+export const responseSchema = z.object({
+  questionIndex: z.number().int().min(0),
+  selectedOption: z.enum(["a", "b", "c", "d"]),
+});
+
+// Quiz Router (Teacher-facing)
 export const quizRouter = createTRPCRouter({
-  getAllQuizzesAssignedToClass: teacherProcedure
-    .input(z.object({ classId: z.number() }))
-    .query(async ({ input, ctx }) => {
-      const { classId } = input;
-      const userId = ctx.session.user.id; // Teacher's ID as string
-
-      // Verify the class belongs to the teacher
-      const classData = await db
-        .select()
-        .from(classes)
-        .where(and(eq(classes.id, classId), eq(classes.ownerId, userId)));
-      if (!classData.length) {
-        throw new Error("Class not found or not owned by you");
-      }
-
-      const assignedQuizzes = await db
-        .select({
-          id: quizzes.id,
-          name: quizzes.name,
-          startTime: quizzes.startTime,
-          endTime: quizzes.endTime,
-        })
-        .from(quizzes)
-        .innerJoin(quizClasses, eq(quizzes.id, quizClasses.quizId))
-        .where(eq(quizClasses.classId, classId));
-      return assignedQuizzes;
-    }),
-
-    createClass: teacherProcedure
+  // Create a new quiz
+  createQuiz: teacherProcedure
     .input(
       z.object({
         name: z.string().min(1),
-        description: z.string().optional(),
-        studentIds: z.array(z.string()).optional(),
+        questions: z.array(questionSchema),
+        durationMinutes: z.number().int().positive().default(15),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { name, description, studentIds } = input;
+      const { name, questions, durationMinutes } = input;
       const ownerId = ctx.session.user.id;
 
-      const result = await db.transaction(async (tx) => {
-        // Create the class with explicit type
-        const newClass = await tx
-          .insert(classes)
-          .values({
-            name,
-            description,
-            ownerId,
-          })
-          .returning({ id: classes.id }) as { id: number }[]; // Type assertion
+      const code = nanoid(8); // Generate unique 8-char code
 
-        // Check if newClass has results
-        const classId = newClass[0]?.id;
-        if (!classId) {
-          throw new Error("Failed to create class");
-        }
+      const newQuiz = await db
+        .insert(quizzes)
+        .values({
+          name,
+          ownerId,
+          code,
+          questions: questions, // JSONB accepts JS object directly in Drizzle
+          durationMinutes,
+          active: false,
+        })
+        .returning({ id: quizzes.id, code: quizzes.code }) as { id: number; code: string }[];
 
-        // Enroll students if provided
-        if (studentIds?.length) {
-          const enrollments = studentIds.map((studentId) => ({
-            classId,
-            studentId,
-          }));
-          await tx.insert(classStudents).values(enrollments);
-        }
+      if (!newQuiz[0]) {
+        throw new Error("Failed to create quiz");
+      }
 
-        return { classId, enrolledStudents: studentIds ?? [] };
-      });
-
-      return result;
+      return { quizId: newQuiz[0].id, code: newQuiz[0].code };
     }),
 
-  addStudentToClass: studentProcedure
-    .input(
-      z.object({
-        classId: z.number(),
-        studentId: z.string(), // Changed to string
+  // Get all quizzes created by the teacher
+  getTeacherQuizzes: teacherProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+    return await db
+      .select({
+        id: quizzes.id,
+        name: quizzes.name,
+        code: quizzes.code,
+        active: quizzes.active,
+        durationMinutes: quizzes.durationMinutes,
+        createdAt: quizzes.createdAt,
       })
-    )
+      .from(quizzes)
+      .where(eq(quizzes.ownerId, userId));
+  }),
+
+  // Activate/deactivate a quiz
+  toggleQuizActive: teacherProcedure
+    .input(z.object({ quizId: z.number(), active: z.boolean() }))
     .mutation(async ({ input, ctx }) => {
-      const { classId, studentId } = input;
-      const userId = ctx.session.user.id; // Teacher's ID as string
+      const { quizId, active } = input;
+      const userId = ctx.session.user.id;
 
-      // Validate class exists and is owned by the teacher
-      const classData = await db
+      const quiz = await db
         .select()
-        .from(classes)
-        .where(and(eq(classes.id, classId), eq(classes.ownerId, userId)));
-      if (!classData.length) {
-        throw new Error("Class not found or not owned by you");
+        .from(quizzes)
+        .where(and(eq(quizzes.id, quizId), eq(quizzes.ownerId, userId)))
+        .limit(1);
+      if (!quiz[0]) {
+        throw new Error("Quiz not found or not owned by you");
       }
 
-      // Enroll the student (unique constraint will prevent duplicates)
-      try {
-        await db.insert(classStudents).values({ classId, studentId });
-      } catch (error) {
-          throw new Error("Student is already enrolled in this class");
-         // Re-throw other errors
-      }
+      await db
+        .update(quizzes)
+        .set({ active })
+        .where(eq(quizzes.id, quizId));
 
-      return { classId, studentId };
+      return { quizId, active };
     }),
 
-  getAllClassesMadeByTeacher: teacherProcedure.query(async ({ ctx }) => {
-    const userId = ctx.session.user.id; // Teacher's ID as string
-    const teacherClasses = await db
-      .select()
-      .from(classes)
-      .where(eq(classes.ownerId, userId));
-    return teacherClasses;
-  }),
+  // Get quiz details (including questions) for the teacher
+  getQuizDetails: teacherProcedure
+    .input(z.object({ quizId: z.number() }))
+    .query(async ({ input, ctx }) => {
+      const { quizId } = input;
+      const userId = ctx.session.user.id;
+
+      const quiz = await db
+        .select()
+        .from(quizzes)
+        .where(and(eq(quizzes.id, quizId), eq(quizzes.ownerId, userId)))
+        .limit(1);
+
+      if (!quiz[0]) {
+        throw new Error("Quiz not found or not owned by you");
+      }
+
+      return quiz[0];
+    }),
+
+  // Get quiz attempts (results) for a quiz
+  getQuizResults: teacherProcedure
+    .input(z.object({ quizId: z.number() }))
+    .query(async ({ input, ctx }) => {
+      const { quizId } = input;
+      const userId = ctx.session.user.id;
+
+      const quiz = await db
+        .select()
+        .from(quizzes)
+        .where(and(eq(quizzes.id, quizId), eq(quizzes.ownerId, userId)))
+        .limit(1);
+      if (!quiz[0]) {
+        throw new Error("Quiz not found or not owned by you");
+      }
+
+      const attempts = await db
+        .select({
+          id: quizAttempts.id,
+          nickname: quizAttempts.nickname,
+          score: quizAttempts.score,
+          startTime: quizAttempts.startTime,
+          endTime: quizAttempts.endTime,
+          responses: quizAttempts.responses,
+        })
+        .from(quizAttempts)
+        .where(eq(quizAttempts.quizId, quizId));
+
+      return { quiz: quiz[0], attempts };
+    }),
 });
