@@ -1,4 +1,6 @@
+// app/teacher/dashboard/page.tsx
 "use client";
+
 import React, { useState } from "react";
 import { api } from "@/trpc/react";
 import {
@@ -11,15 +13,20 @@ import { Button } from "@/components/ui/button";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, Trash2 } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
-// Correct Typing
 type CorrectOption = "a" | "b" | "c" | "d";
 
 type Question = {
@@ -44,7 +51,6 @@ const CreateQuizDialog: React.FC<{ open: boolean; onOpenChange: (open: boolean) 
   const [topic, setTopic] = useState("");
   const [durationMinutes, setDurationMinutes] = useState("15");
   const [questions, setQuestions] = useState<Question[]>([]);
-
   const [currentQuestion, setCurrentQuestion] = useState<Question>({
     text: "",
     optionA: "",
@@ -59,39 +65,17 @@ const CreateQuizDialog: React.FC<{ open: boolean; onOpenChange: (open: boolean) 
   const { mutate, isPending } = api.quiz.createQuiz.useMutation({
     onSuccess: (data) => {
       toast(`Quiz created with code: ${data.code}`);
-      setName("");
-      setTopic("");
-      setDurationMinutes("15");
-      setQuestions([]);
-      setCurrentQuestion({
-        text: "",
-        optionA: "",
-        optionB: "",
-        optionC: "",
-        optionD: "",
-        correctOption: "a",
-        points: 1,
-        difficulty: "medium",
-      });
+      resetForm();
       onOpenChange(false);
     },
-    onError: (err) => {
-      toast(`Error: ${err.message}`);
-    },
+    onError: (err) => toast(`Error: ${err.message}`),
   });
 
-  const addQuestion = () => {
-    if (
-      !currentQuestion.text ||
-      !currentQuestion.optionA ||
-      !currentQuestion.optionB ||
-      !currentQuestion.optionC ||
-      !currentQuestion.optionD
-    ) {
-      toast("Error: All question fields are required");
-      return;
-    }
-    setQuestions([...questions, currentQuestion]);
+  const resetForm = () => {
+    setName("");
+    setTopic("");
+    setDurationMinutes("15");
+    setQuestions([]);
     setCurrentQuestion({
       text: "",
       optionA: "",
@@ -104,35 +88,54 @@ const CreateQuizDialog: React.FC<{ open: boolean; onOpenChange: (open: boolean) 
     });
   };
 
+  const addQuestion = () => {
+    if (
+      !currentQuestion.text ||
+      !currentQuestion.optionA ||
+      !currentQuestion.optionB ||
+      !currentQuestion.optionC ||
+      !currentQuestion.optionD
+    ) {
+      toast("Error: All question fields are required");
+      return;
+    }
+    setQuestions((prev) => [...prev, currentQuestion]);
+    setCurrentQuestion({
+      text: "",
+      optionA: "",
+      optionB: "",
+      optionC: "",
+      optionD: "",
+      correctOption: "a",
+      points: 1,
+      difficulty: "medium",
+    });
+  };
+
+  const removeQuestion = (index: number) => {
+    setQuestions((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleAIClick = async () => {
     try {
       const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-
-      if (!GEMINI_API_KEY) {
-        throw new Error("Gemini API key is not defined");
-      }
+      if (!GEMINI_API_KEY) throw new Error("Gemini API key is not defined");
 
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-      const prompt = `Generate a JSON object with multiple-choice questions and difficulty should be there for every question with the following structure:
-      - Topic: "${topic}"
+      const prompt = `Generate a JSON object with multiple-choice questions for topic "${topic}":
       - "questions" array containing:
         - "text": string
         - "optionA", "optionB", "optionC", "optionD": string
         - "correctOption": "a" | "b" | "c" | "d"
         - "points": 1
-        - "difficulty": "easy" | "medium" | "hard"
-      `;
+        - "difficulty": "easy" | "medium" | "hard"`;
 
-      const resultResponse = await model.generateContent(prompt);
-      const responseText = resultResponse.response.text();
+      const result = await model.generateContent(prompt);
+      const responseText = result.response.text().replace(/```(json)?/g, "").trim();
+      const parsedData = JSON.parse(responseText) as { questions: Question[] };
 
-      // Clean and parse JSON safely
-      const cleanedResponse = responseText.replace(/```(json)?/g, "").trim();
-      const parsedData = JSON.parse(cleanedResponse) as { questions: Question[] };
-
-      console.log("AI Generated Questions:", parsedData.questions);
       setQuestions(parsedData.questions);
     } catch (err) {
       console.error("Error generating questions:", err);
@@ -149,6 +152,10 @@ const CreateQuizDialog: React.FC<{ open: boolean; onOpenChange: (open: boolean) 
       toast("Error: Quiz topic is required");
       return;
     }
+    if (questions.length === 0) {
+      toast("Error: At least one question is required");
+      return;
+    }
     mutate({
       name,
       questions: questions.map((q) => ({
@@ -161,33 +168,35 @@ const CreateQuizDialog: React.FC<{ open: boolean; onOpenChange: (open: boolean) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Create New Quiz</DialogTitle>
+      <DialogContent className="sm:max-w-[700px] max-h-[80vh] flex flex-col bg-white">
+        <DialogHeader className="shrink-0 border-b pb-4">
+          <DialogTitle className="text-2xl font-bold text-gray-800">Create New Quiz</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name">Quiz Name</Label>
+            <Label htmlFor="name" className="text-gray-700">Quiz Name</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter quiz name"
               disabled={isPending}
+              className="border-gray-300"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="topic">Quiz Topic</Label>
+            <Label htmlFor="topic" className="text-gray-700">Quiz Topic</Label>
             <Input
               id="topic"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Enter topic"
               disabled={isPending}
+              className="border-gray-300"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="duration">Duration (minutes)</Label>
+            <Label htmlFor="duration" className="text-gray-700">Duration (minutes)</Label>
             <Input
               id="duration"
               type="number"
@@ -195,127 +204,166 @@ const CreateQuizDialog: React.FC<{ open: boolean; onOpenChange: (open: boolean) 
               onChange={(e) => setDurationMinutes(e.target.value)}
               placeholder="Duration in minutes"
               disabled={isPending}
+              className="border-gray-300"
             />
           </div>
-          <div className="space-y-2">
-            <Label>Question</Label>
+          <div className="space-y-4 border-t pt-4">
+            <Label className="text-gray-700 text-lg font-semibold">Add Question</Label>
             <Input
               value={currentQuestion.text}
               onChange={(e) => setCurrentQuestion({ ...currentQuestion, text: e.target.value })}
               placeholder="Enter question text"
               disabled={isPending}
+              className="border-gray-300"
             />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              value={currentQuestion.optionA}
-              onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionA: e.target.value })}
-              placeholder="Option A"
-              disabled={isPending}
-            />
-            <Input
-              value={currentQuestion.optionB}
-              onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionB: e.target.value })}
-              placeholder="Option B"
-              disabled={isPending}
-            />
-            <Input
-              value={currentQuestion.optionC}
-              onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionC: e.target.value })}
-              placeholder="Option C"
-              disabled={isPending}
-            />
-            <Input
-              value={currentQuestion.optionD}
-              onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionD: e.target.value })}
-              placeholder="Option D"
-              disabled={isPending}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <Label>Correct Option</Label>
-              <Select
-                value={currentQuestion.correctOption}
-                onValueChange={(value) => {
-                  if (isCorrectOption(value)) {
-                    setCurrentQuestion({ ...currentQuestion, correctOption: value });
-                  } else {
-                    toast("Error: Invalid correct option selected");
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                value={currentQuestion.optionA}
+                onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionA: e.target.value })}
+                placeholder="Option A"
+                disabled={isPending}
+                className="border-gray-300"
+              />
+              <Input
+                value={currentQuestion.optionB}
+                onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionB: e.target.value })}
+                placeholder="Option B"
+                disabled={isPending}
+                className="border-gray-300"
+              />
+              <Input
+                value={currentQuestion.optionC}
+                onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionC: e.target.value })}
+                placeholder="Option C"
+                disabled={isPending}
+                className="border-gray-300"
+              />
+              <Input
+                value={currentQuestion.optionD}
+                onChange={(e) => setCurrentQuestion({ ...currentQuestion, optionD: e.target.value })}
+                placeholder="Option D"
+                disabled={isPending}
+                className="border-gray-300"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-700">Correct Option</Label>
+                <Select
+                  value={currentQuestion.correctOption}
+                  onValueChange={(value) =>
+                    isCorrectOption(value)
+                      ? setCurrentQuestion({ ...currentQuestion, correctOption: value })
+                      : toast("Error: Invalid correct option")
                   }
-                }}
+                  disabled={isPending}
+                >
+                  <SelectTrigger className="border-gray-300">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="a">A</SelectItem>
+                    <SelectItem value="b">B</SelectItem>
+                    <SelectItem value="c">C</SelectItem>
+                    <SelectItem value="d">D</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-gray-700">Points</Label>
+                <Input
+                  type="number"
+                  value={currentQuestion.points}
+                  onChange={(e) =>
+                    setCurrentQuestion({ ...currentQuestion, points: parseInt(e.target.value, 10) || 1 })
+                  }
+                  placeholder="Points"
+                  disabled={isPending}
+                  className="border-gray-300"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-gray-700">Difficulty</Label>
+              <Select
+                value={currentQuestion.difficulty}
+                onValueChange={(value) =>
+                  setCurrentQuestion({
+                    ...currentQuestion,
+                    difficulty: value as "easy" | "medium" | "hard",
+                  })
+                }
                 disabled={isPending}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
+                <SelectTrigger className="border-gray-300">
+                  <SelectValue placeholder="Select difficulty" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="a">A</SelectItem>
-                  <SelectItem value="b">B</SelectItem>
-                  <SelectItem value="c">C</SelectItem>
-                  <SelectItem value="d">D</SelectItem>
+                  <SelectItem value="easy">Easy</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="hard">Hard</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Points</Label>
-              <Input
-                type="number"
-                value={currentQuestion.points}
-                onChange={(e) => setCurrentQuestion({ ...currentQuestion, points: parseInt(e.target.value, 10) || 1 })}
-                placeholder="Points"
-                disabled={isPending}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Difficulty</Label>
-            <Select
-              value={currentQuestion.difficulty}
-              onValueChange={(value) =>
-                setCurrentQuestion({
-                  ...currentQuestion,
-                  difficulty: value as "easy" | "medium" | "hard",
-                })
-              }
+            <Button
+              type="button"
+              onClick={addQuestion}
               disabled={isPending}
+              className="bg-purple-700 hover:bg-purple-800 text-white"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select difficulty" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="easy">Easy</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="hard">Hard</SelectItem>
-              </SelectContent>
-            </Select>
+              Add Question
+            </Button>
           </div>
-          <Button type="button" onClick={addQuestion} disabled={isPending}>
-            Add Question
-          </Button>
-          <Button type="button" onClick={handleAIClick} disabled={isPending || !topic}>
-            Generate AI Questions
-          </Button>
           {questions.length > 0 && (
-            <div className="max-h-32 overflow-y-auto">
-              <h3 className="text-sm font-semibold">Questions:</h3>
-              <ul className="space-y-1">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800">
+                Added Questions ({questions.length})
+              </h3>
+              <ul className="space-y-3 max-h-52 overflow-y-auto border rounded-md p-3 bg-gray-50">
                 {questions.map((q, idx) => (
-                  <li key={idx} className="text-sm">{q.text}</li>
+                  <li
+                    key={idx}
+                    className="flex justify-between items-center text-sm text-gray-700 bg-white p-3 rounded shadow-sm"
+                  >
+                    <span>{q.text}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeQuestion(idx)}
+                      disabled={isPending}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </li>
                 ))}
               </ul>
             </div>
           )}
-          <div className="flex justify-end gap-2">
+        </div>
+        <div className="shrink-0 flex justify-between items-center px-6 py-4 border-t">
+          <Button
+            type="button"
+            onClick={handleAIClick}
+            disabled={isPending || !topic}
+            className="bg-purple-700 hover:bg-purple-800 text-white"
+          >
+            Generate AI Questions
+          </Button>
+          <div className="flex gap-3">
             <Button
-              type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isPending}
+              className="border-gray-300 text-gray-700 hover:bg-gray-100"
             >
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={isPending}>
+            <Button
+              onClick={handleSubmit}
+              disabled={isPending}
+              className="bg-purple-700 hover:bg-purple-800 text-white"
+            >
               {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -332,7 +380,6 @@ const CreateQuizDialog: React.FC<{ open: boolean; onOpenChange: (open: boolean) 
   );
 };
 
-// TeacherDashboard as the actual page component
 const TeacherDashboard = () => {
   const { data: session, isPending } = useSession();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -348,64 +395,82 @@ const TeacherDashboard = () => {
 
   if (isPending || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin" />
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-200 to-purple-700">
+        <Loader2 className="w-8 h-8 animate-spin text-white" />
       </div>
     );
   }
 
-  if (isPending) {
+  if (!session) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Please log in to view your dashboard.</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-200 to-purple-700">
+        <p className="text-white text-lg">Please log in to view your dashboard.</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
-        <Button onClick={() => setDialogOpen(true)}>Create New Quiz</Button>
+    <div className="min-h-screen bg-gradient-to-bl from-purple-200 to-purple-700 py-12">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-10">
+          <h1 className="text-4xl font-bold text-white">Teacher Dashboard</h1>
+          <Button
+            onClick={() => setDialogOpen(true)}
+            size="lg"
+            className="bg-white text-black hover:bg-gray-200"
+          >
+            Create New Quiz
+          </Button>
+        </div>
+
+        <CreateQuizDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+
+        {quizzes?.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-white text-xl">You haven’t created any quizzes yet.</p>
+          </div>
+        ) : (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {quizzes?.map((quiz) => (
+              <Card
+                key={quiz.id}
+                className="bg-white border-gray-200 hover:shadow-md transition-shadow"
+              >
+                <CardHeader className="border-b">
+                  <CardTitle className="text-gray-800 text-lg">{quiz.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4 space-y-4">
+                  <p className="text-gray-600">
+                    Code: <span className="font-mono text-gray-800">{quiz.code}</span>
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-gray-700">Active:</Label>
+                    <Switch
+                      checked={quiz.active}
+                      onCheckedChange={(active) =>
+                        toggleActive.mutate({ quizId: quiz.id, active })
+                      }
+                      disabled={toggleActive.isPending}
+                      className="data-[state=checked]:bg-purple-700"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <Link href={`/teacher/viewresults/${quiz.id}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-purple-200 text-black border-none hover:bg-gray-200"
+                      >
+                        View Results
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
-
-      <CreateQuizDialog open={dialogOpen} onOpenChange={setDialogOpen} />
-
-      {quizzes?.length === 0 ? (
-        <div className="text-center">
-          <p className="text-gray-500">You haven’t created any quizzes yet.</p>
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {quizzes?.map((quiz) => (
-            <Card key={quiz.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>{quiz.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">Code: <span className="font-mono">{quiz.code}</span></p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Label>Active:</Label>
-                  <Switch
-                    checked={quiz.active}
-                    onCheckedChange={(active) =>
-                      toggleActive.mutate({ quizId: quiz.id, active })
-                    }
-                    disabled={toggleActive.isPending}
-                  />
-                </div>
-                <div className="mt-4 flex justify-between">
-                  <Link href={`/teacher/viewresults/${quiz.id}`}>
-                    <Button variant="outline" size="sm">
-                      View Results
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

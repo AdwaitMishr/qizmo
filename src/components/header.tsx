@@ -109,7 +109,7 @@ export default function Header() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
-                        <Link href="/profile" className="cursor-pointer">
+                        <Link href="/teacher/dashboard" className="cursor-pointer">
                           <User className="mr-2 h-4 w-4" />
                           Profile
                         </Link>
