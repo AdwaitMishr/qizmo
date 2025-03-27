@@ -18,8 +18,8 @@ const features = [
   },
   {
     icon: <Trophy className="w-10 h-10 text-purple-600" />,
-    title: "Gamified Learning Experience",
-    description: "Earn points, badges, and compete on leaderboards to stay motivated.",
+    title: "Cheat-Proof & Secure Exams",
+    description: "Ensure academic integrity with AI-powered proctoring and anti-cheating mechanisms.",
   },
   {
     icon: <CheckCircle className="w-10 h-10 text-purple-600" />,
@@ -28,8 +28,8 @@ const features = [
   },
   {
     icon: <CheckCircle className="w-10 h-10 text-purple-600" />,
-    title: "Collaborative Quiz Creation",
-    description: "Work together with team members to create comprehensive quiz sets.",
+    title: "AI-Optimized Exam Experience",
+    description: "Leverage cutting-edge AI to streamline assessments, ensuring fairness and accuracy.",
   },
   {
     icon: <CheckCircle className="w-10 h-10 text-purple-600" />,

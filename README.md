@@ -1,9 +1,9 @@
 # 📝 Qizmo - Automated MCQ-Based Exam System
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/aryansharma2k4/dev-stage)](https://img.shields.io/github/last-commit/aryansharma2k4/dev-stage)
-[![GitHub issues](https://img.shields.io/github/issues-raw/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-raw/aryansharma2k4/dev-stage)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-pr/aryansharma2k4/dev-stage)
-[![GitHub license](https://img.shields.io/github/license/aryansharma2k4/dev-stage)](https://img.shields.io/github/license/aryansharma2k4/dev-stage)
+[![GitHub last commit](https://img.shields.io/github/last-commit/aryansharma2k4/dev-stage)](https://img.shields.io/github/last-commit/aryansharma2k4/qizmo.git)
+[![GitHub issues](https://img.shields.io/github/issues-raw/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-raw/aryansharma2k4/qizmo.git)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-pr/aryansharma2k4/qizmo.git)
+[![GitHub license](https://img.shields.io/github/license/aryansharma2k4/dev-stage)](https://img.shields.io/github/license/aryansharma2k4/qizmo.git)
 
 Qizmo is a secure, scalable, and automated platform designed for MCQ-based online assessments. It empowers universities and institutions to conduct seamless, cheat-resistant exams with real-time monitoring, automated grading, and detailed performance analytics.
 
