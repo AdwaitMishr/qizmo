@@ -4,13 +4,14 @@ import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader2, Clock, Maximize } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const JoinQuizPage = () => {
   const [code, setCode] = useState("");
   const [nickname, setNickname] = useState("");
+  const [duration, setDuration] = useState(0)
   const router = useRouter();
 
   const { data, isFetching, refetch, error } = api.participation.getQuizByCode.useQuery(
@@ -23,7 +24,8 @@ const JoinQuizPage = () => {
 
   useEffect(() => {
     if (data) {
-      console.log("JoinQuizPage: Quiz found:", data);
+      setDuration(data.durationMinutes)
+      
       router.push(
         `/play/0?code=${encodeURIComponent(code)}&nickname=${encodeURIComponent(nickname)}&quiz_id=${encodeURIComponent(data.id)}`
       );
@@ -47,7 +49,10 @@ const JoinQuizPage = () => {
   };
 
   return (
+    <>
+        
     <div className="flex items-center justify-center min-h-screen">
+       
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-6 text-center">Join a Quiz</h1>
         <div className="space-y-4">
@@ -90,6 +95,7 @@ const JoinQuizPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,11 +1,10 @@
-// app/play/[quizId]/page.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import { api } from "@/trpc/react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 type Question = {
@@ -25,26 +24,43 @@ type Response = {
 
 const QuizPlayPage = () => {
   const searchParams = useSearchParams();
-  const quizId = parseInt(searchParams.get("quiz_id") ??   "0", 10);
-
+  const [duration, setDuration] = useState(10); // Default to 10 minutes
+  const quizId = parseInt(searchParams.get("quiz_id") ?? "0", 10);
   const code = searchParams.get("code") ?? "";
   const nickname = searchParams.get("nickname") ?? "";
   const router = useRouter();
 
-  const [responses, setResponses] = useState<Response[]>([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const { data, isFetching, refetch } = api.participation.getQuizByCode.useQuery(
+    { code },
+    {
+      enabled: false,
+      retry: false,
+    }
+  );
 
   const isValidCode = code.length === 8;
-
-  console.log("QuizPlayPage: QuizId:", quizId, "Code:", code, "Nickname:", nickname, "IsValidCode:", isValidCode);
 
   const { data: quiz, isLoading, error, isFetched } = api.participation.getQuizByCode.useQuery(
     { code },
     {
       enabled: isValidCode && !!nickname,
       retry: false,
+        // Set duration from the quiz data when it's successfully fetche
     }
   );
+useEffect(() => {
+  setDuration(data?.durationMinutes)
+},[data])
+  
+
+  const [responses, setResponses] = useState<Response[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(duration * 60); // Convert minutes to seconds
+
+  // Update timeLeft when duration changes
+  useEffect(() => {
+    setTimeLeft(duration * 60);
+  }, [duration]);
 
   const submitAttempt = api.participation.submitQuizAttempt.useMutation({
     onSuccess: (data) => {
@@ -54,25 +70,36 @@ const QuizPlayPage = () => {
     onError: (err) => toast(`Error: ${err.message}`),
   });
 
-//   useEffect(() => {
-//     console.log("QuizPlayPage: Quiz:", quiz, "IsLoading:", isLoading, "IsFetched:", isFetched, "Error:", error);
-//     if (isFetched && !isLoading) {
-//       if (!quiz) {
-//         toast("Error: Quiz not found or not active");
-//         router.push("/join");
-//       } else if (quiz.id !== quizId) {
-//         toast("Error: Quiz ID mismatch");
-//         router.push("/join");
-//       } else if (error) {
-//         toast(`Error: ${error.message}`);
-//         router.push("/join");
-//       }
-//     }
-//     if (!isValidCode || !nickname) {
-//       toast("Error: Invalid quiz code or missing nickname");
-//       router.push("/join");
-//     }
-//   }, [quiz, isLoading, isFetched, error, isValidCode, nickname, quizId, router]);
+  // Timer effect
+  useEffect(() => {
+    // If timer runs out or quiz is completed, stop the timer
+    if (timeLeft <= 0 || currentQuestionIndex === (quiz?.questions.length ?? 0) - 1) {
+      if (timeLeft <= 0) {
+        toast("Time's up! Submitting your quiz.");
+        submitAttempt.mutate({
+          quizId,
+          nickname,
+          responses,
+        });
+      }
+      return;
+    }
+
+    // Set up the interval
+    const timerId = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    // Clean up the interval
+    return () => clearInterval(timerId);
+  }, [timeLeft, currentQuestionIndex, quiz, submitAttempt, quizId, nickname, responses]);
+
+  // Format time to MM:SS
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   if (isLoading || !isFetched) {
     return (
@@ -83,7 +110,7 @@ const QuizPlayPage = () => {
   }
 
   if (!quiz) {
-    return null; // Let useEffect handle redirect
+    return null;
   }
 
   const questions: Question[] = quiz.questions as Question[];
@@ -124,7 +151,15 @@ const QuizPlayPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen relative">
+      {/* Timer in top left corner */}
+      <div className="absolute top-4 left-4 flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+        <Clock className={`w-5 h-5 ${timeLeft <= 60 ? 'text-red-500' : 'text-gray-600'}`} />
+        <span className={`font-semibold ${timeLeft <= 60 ? 'text-red-500' : 'text-gray-800'}`}>
+          {formatTime(timeLeft)}
+        </span>
+      </div>
+
       <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>
