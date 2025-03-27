@@ -1,5 +1,17 @@
 # 📝 Qizmo - Automated MCQ-Based Exam System
 
+## 📹 Project Demonstration
+
+[![Watch the video](https://img.youtube.com/vi/GJ6dOxLFbLU/0.jpg)](https://www.youtube.com/watch?v=GJ6dOxLFbLU)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/GJ6dOxLFbLU" frameborder="0" allowfullscreen></iframe>
+
+[YouTube Video Link](https://www.youtube.com/watch?v=GJ6dOxLFbLU)
+
+## 📄 Project PPT
+
+[Google Slides Presentation](https://docs.google.com/presentation/d/18W8LI8d3GVNVCtGWVhl_BxwXANl5HMZD/edit?usp=sharing&ouid=105350664705081969611&rtpof=true&sd=true)
+
 [![GitHub last commit](https://img.shields.io/github/last-commit/aryansharma2k4/dev-stage)](https://img.shields.io/github/last-commit/aryansharma2k4/qizmo.git)
 [![GitHub issues](https://img.shields.io/github/issues-raw/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-raw/aryansharma2k4/qizmo.git)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/aryansharma2k4/dev-stage)](https://img.shields.io/github/issues-pr/aryansharma2k4/qizmo.git)
@@ -58,7 +70,7 @@ Qizmo is a secure, scalable, and automated platform designed for MCQ-based onlin
 ## 🚦 Quick Start
 
 ### Prerequisites
-- Node.jsx
+- Node.js
 - PostgreSQL
 
 ### Installation
@@ -113,14 +125,5 @@ Contributions are welcome! Please follow these steps:
 2. Create a new branch
 3. Submit a pull request
 
-
 ## 🤝 Support
 For support, please open an issue in the GitHub repository.
-
-## Project Demonstration
-Check out the youtube link for qizmo project demonstration
-https://youtu.be/GJ6dOxLFbLU
-
-## Project PPT
-Check the project ppt presentation using this link
-https://docs.google.com/presentation/d/18W8LI8d3GVNVCtGWVhl_BxwXANl5HMZD/edit?usp=sharing&ouid=105350664705081969611&rtpof=true&sd=true
